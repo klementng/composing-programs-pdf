@@ -1,0 +1,4 @@
+beautifulsoup4==4.12.3
+PyPDF2==3.0.1
+pyppeteer==2.0.0
+Requests==2.32.3
