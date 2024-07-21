@@ -1,10 +1,9 @@
 import asyncio
 import inspect
+import json
 import os
-import re
 import sys
 from urllib.parse import urljoin, urlparse, urlunparse
-import json
 
 import requests
 from bs4 import BeautifulSoup
@@ -111,30 +110,30 @@ def merge_pdf(pdf_dir="pdf/", output_path="output.pdf"):
         pdf_metadata = json.load(f)
 
     writer = PdfWriter()
-    n = 0
+    b = 0
 
     bookmarks = {}
     for pdf_m in pdf_metadata:
         pdf_path = os.path.join(pdf_dir, f"{pdf_m['id']}.pdf")
         reader = PdfReader(pdf_path)
 
-        writer.add_outline_item(pdf_m["title"], n)
+        writer.add_outline_item(pdf_m["title"], b)
 
         bookmarks.update(
             {
                 pdf_m["url"]: {
                     "title": pdf_m["title"],
-                    "page": n,
+                    "page": b,
                 }
             }
         )
 
         for page in reader.pages:
             writer.add_page(page)
-            n += 1
+            b += 1
 
     # replace url to internal links
-    for n, page in enumerate(writer.pages):
+    for page in writer.pages:
 
         annot: IndirectObject
         for annot in page.get("/Annots", []):
@@ -160,7 +159,7 @@ def merge_pdf(pdf_dir="pdf/", output_path="output.pdf"):
                     NumberObject(bookmarks[uri]["page"]),
                     Fit(
                         "/XYZ",
-                        (0, 0, 0),
+                        (None, None, 0),
                     ),
                 )
 
